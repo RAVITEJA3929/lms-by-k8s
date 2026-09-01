@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+        - name: api-server
+          image: lms-backend:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            # Value 1 from ConfigMap
+            - name: MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: MODE
+
+            # Value 2 from ConfigMap
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: PORT
+
+            # Value from Secret
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DATABASE_URL
